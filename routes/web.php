@@ -19,16 +19,18 @@ Auth::routes();
 
 Route::get('/articles', 'ArticleController@index')->name('index');
 Route::get('/', 'ArticleController@index')->name('index');
-Route::post('/vote/{id}', 'ArticleController@vote')->name('article.vote');
-Route::post('/article', 'ArticleController@store')->name('article.store');
-Route::get('/add', 'ArticleController@add')->name('article.add');
 //Route::get('/articles', 'ArticleController@index')->name('article.index');
 /*Route::edit('/article/{id}', 'ArticleController@edit')->name('article.edit');
 Route::put('/article', 'ArticleController@update')->name('article.update');
 
 Route::delete('/article', 'ArticleController@delete')->name('article.delete');*/
+Route::group(['middleware' => 'auth'], function() {
+    Route::post('/vote', 'ArticleController@vote')->name('article.vote');
+    Route::post('/article', 'ArticleController@store')->name('article.store');
+    Route::get('/add', 'ArticleController@add')->name('article.add');
+});
 
-Route::get('/home', 'HomeController@index')->name('home');
+//Route::get('/home', 'HomeController@index')->name('home');
 
 /*Route::get('/index', function () {
     return 1;

@@ -2,7 +2,6 @@
 
 namespace App\Helper;
 
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Redis;
 
 class Article
@@ -46,6 +45,29 @@ class Article
         }
 
         return $articles;
+    }
+
+    /**
+     * @param $user
+     * @param $article
+     * @return bool | mixed
+     */
+    public static function articleVote($user, $article)
+    {
+        $cutoff = time() - self::ONE_WEEK_IN_SECONDS; // 计算截止投票时间
+
+        if (Redis::zscore('time:', $article) < $cutoff) {
+            return false;
+        }
+
+        $articleId = explode(':', $article)[1];
+        if (Redis::sadd('voted:' . $articleId, $user)) {
+            Redis::zincrby('score:', self::VOTE_SCORE, $article);
+            Redis::hincrby($article, 'votes', 1);
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

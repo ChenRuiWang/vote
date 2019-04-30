@@ -11,7 +11,7 @@ class ArticleController extends Controller
     public function store(ArticleStoreRequest $request)
     {
         Article::postArticle($request->user()->id, $request->input('title', ''), $request->input('url', '/'));
-        return redirect('/home');
+        return redirect('/');
     }
 
     public function add()
@@ -23,6 +23,12 @@ class ArticleController extends Controller
     {
         $articles = Article::getArticles($request->input('page', 1), $request->input('order', 'score:'));
         return view('article.index', ['articles' => $articles]);
+    }
+
+    public function vote(Request $request)
+    {
+        $flag = Article::articleVote($request->user()->id, $request->input('article'));
+        return response()->json(['is_success' => $flag]);
     }
 
     public function edit()
